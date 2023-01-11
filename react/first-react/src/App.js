@@ -8,7 +8,7 @@ function App() {
   const [value, setValue] = useState(0);
   const increase = () => {
     counter = counter + 1;
-    //setCounter2(counter2 + 1);
+    setCounter2(counter2 + 1);
     setValue(value + 2);
     console.log("counter는:", counter, "counter2 state는:", counter2);
   };
