@@ -4,13 +4,14 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import LandingPage from "./chapter_09/LandingPage";
+import AttendanceBook from "./chapter_10/AttendanceBook";
 
 /** 18ver. */
 const rootNode = document.getElementById("root");
 
 ReactDOM.createRoot(rootNode).render(
   <React.StrictMode>
-    <LandingPage />
+    <AttendanceBook />
   </React.StrictMode>
 );
 // If you want to start measuring performance in your app, pass a function
