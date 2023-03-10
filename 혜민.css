@@ -1,0 +1,257 @@
+@charset "utf-8";
+
+/* 폰트
+font-family: 'Nanum Myeongjo', serif;
+font-family: 'Noto Sans KR', sans-serif;
+font-family: 'EB Garamond', sans-serif; */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    /*부모에게 상속받은 글씨색상값을 사용해라. 다른 태그안의 글씨와 색상변경하는방법이 같아진다.*/
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+img,
+video,
+iframe {
+    vertical-align: middle;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    line-height: 24px;
+    color: #666;
+}
+
+/*header*/
+#header {
+    width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#gnb {
+    display: flex;
+    font-size: 18px;
+}
+
+#gnb li {
+    padding: 30px;
+}
+
+/*main_banner*/
+.main_banner img {
+    width: 100%;
+}
+
+.mbnext,
+.mbprev {
+    color: #fff;
+}
+
+.mbpgn span {
+    background-color: #fff;
+}
+
+/*best_art*/
+#best_art {
+    width: 1320px;
+    margin: 0 auto;
+    padding: 100px 0;
+    text-align: center;
+}
+
+.brown {
+    font-family: 'Nanum Myeongjo', serif;
+    color: burlywood;
+    padding: 10px 0;
+}
+
+#best_art h1 {
+    font-family: 'EB Garamond', sans-serif;
+    color: #111;
+    font-size: 50px;
+    font-weight: normal;
+    line-height: normal;
+    padding-top: 30px;
+}
+
+.card {
+    text-align: left;
+    box-sizing: border-box;
+    padding: 50px 0;
+}
+
+.card img {
+    width: 100%;
+}
+
+.card h3 {
+    padding: 20px 0;
+}
+
+#best_art .swiper-pagination-bullet {
+    width: 15px;
+    height: 15px;
+    background-color: burlywood;
+}
+
+/*이클래스와 swiper pagination span 태그가 공통 클라스를 갖고 있으므로 똑같이들어간다.*/
+/*md_pick*/
+#md_pick {
+    background: url(./images/md_bg.jpg) no-repeat;
+    background-size: cover;
+
+}
+
+#mp_inner {
+    width: 1320px;
+    margin: 0 auto;
+    padding: 100px 0;
+    text-align: center;
+}
+
+#mp_inner h1 {
+    font-family: 'EB Garamond', sans-serif;
+    color: #111;
+    font-size: 50px;
+    font-weight: normal;
+    line-height: normal;
+    padding-bottom: 50px;
+}
+
+.pick {
+    display: flex;
+    justify-content: space-around;
+}
+
+.img {
+    width: 540 px;
+}
+
+.txt {
+    width: 600px;
+    text-align: left;
+}
+
+.txt h2 {
+    font-size: 35px;
+    color: #111;
+    padding-bottom: 50px;
+}
+
+.txt a {
+    display: inline-block;
+    padding: 20px 40px;
+    font-size: 20px;
+    border: 1px solid burlywood;
+    margin-top: 30px;
+}
+
+/*gallery*/
+#gallery {
+    background: url(./images/gallery-bg.jpg) no-repeat fixed;
+    background-size: cover;
+}
+
+#gallery h1 {
+    text-align: center;
+    font-family: 'EB Garamond', sans-serif;
+    color: #111;
+    font-size: 50px;
+    font-weight: normal;
+    line-height: normal;
+    padding: 200px 0;
+    letter-spacing: 10px;
+}
+
+/*new_art*/
+#new_art {
+    width: 1320px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 200px 0;
+}
+
+#new_art h1 {
+    font-family: 'EB Garamond', sans-serif;
+    color: #111;
+    font-size: 50px;
+    font-weight: normal;
+    line-height: normal;
+    padding-bottom: 50px;
+    letter-spacing: 10px;
+}
+
+.art {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.n_txt {
+    background-color: #fff;
+    padding: 20px 0;
+    text-align: left;
+    width: 400px;
+}
+
+.br {
+    color: burlywood;
+}
+
+.n_txt h3 {
+    padding: 20px 0;
+}
+
+.n_txt a {
+    display: inline-block;
+    padding: 20px 0;
+}
+
+.n_img1,
+.n_img2,
+.n_img3 {
+    position: relative;
+}
+
+.po1,
+.po2,
+.po3 {
+    position: absolute;
+    bottom: -180px;
+    left: 0;
+}
+
+/*footer*/
+#footer {
+    background-color: #666;
+    color: #ccc;
+}
+
+.f_inner {
+    width: 1320px;
+    margin: 0 auto;
+    padding: 50px 0;
+}
+
+.f_inner ul {
+    display: flex;
+}
+
+.f_inner li {
+    padding-right: 20px;
+    padding-bottom: 30px;
+}
