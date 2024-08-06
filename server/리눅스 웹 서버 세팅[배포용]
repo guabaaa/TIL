@@ -1,0 +1,209 @@
+# 리눅스 웹 서버 세팅 [배포용]
+
+1. **새 서버 받을때마다 적용 할 것(1,2,3) & 서버 재시작시(1)**
+    1. selinux 설정 끄기 
+        
+        ```bash
+        # enforce 상태 조회
+        sudo getenforce 
+        
+        # enforce 상태 변경
+        sudo setenforce 0 
+        
+        ** 실제 구동문 
+        [centos@ip-10-0-10-155 ~]$ sudo getenforce 
+        Enforcing
+        [centos@ip-10-0-10-155 ~]$ sudo setenforce 0
+        [centos@ip-10-0-10-155 ~]$ sudo getenforce 
+        Permissive
+        ```
+        
+    2. 커널 sysctl 수정(소켓 maxconn 셋팅값 수정) → maxconn값은 상황에 따라 수정 가능
+        
+        ```bash
+        #maxconn 상태 조회
+        sudo sysctl -a | grep net.core.somaxconn
+        
+        #maxconn 상태 수정
+        sudo /sbin/sysctl -w net.core.somaxconn=4096
+        net.core.somaxconn = 65535
+        
+        ** 실제 구동문 
+        [centos@ip-10-0-10-155 ~]$ sudo sysctl -a | grep net.core.somaxconn
+        net.core.somaxconn = 128
+        sysctl: reading key "net.ipv6.conf.all.stable_secret"
+        sysctl: reading key "net.ipv6.conf.default.stable_secret"
+        sysctl: reading key "net.ipv6.conf.eth0.stable_secret"
+        sysctl: reading key "net.ipv6.conf.lo.stable_secret"
+        [centos@ip-10-0-10-155 ~]$ sudo /sbin/sysctl -w net.core.somaxconn=4096
+        net.core.somaxconn = 4096
+        ```
+        
+    3. 포트 체크해보기 (방화벽)
+        
+        ```bash
+        sudo netstat -lntup
+        ```
+        
+    4. 서버 재시작시 : 3.(b) 활용해 nginx 재시작 
+    
+2. **소스 이관 (git 이용시)**
+    1. 깃 설치 및 소스 이관(clone)
+        
+        ```bash
+        sudo yum install git
+        git clone
+        ```
+        
+    
+3. **nginx 설치**
+    1. nginx 설치 
+        
+        ```bash
+        # install  실패시 epel-release 설치 후 소프트웨어 설치
+        # sudo yum install epel-release 
+        
+        sudo yum -y install nginx
+        ```
+        
+    2. nginx 만 실행시켜서 동작 체크
+        
+        ```bash
+        sudo systemctl start nginx
+        sudo systemctl status nginx
+        curl -X GET "http://{{hostname}}/index.html" or curl -X GET "http://{{ip}}/index.html" -> nginx 기본 페이지 호출되는지 확인
+        ```
+        
+    3. nginx 기본 conf 파일 수정
+        
+        ```bash
+        # 위치 찾기
+        sudo find / -name nginx.conf
+        
+        # nginx.conf 파일내에 user 권한을 root로 변경  -> 파일 경로 위치때문에 외부 접속안되는 문제로 아래 설정 변경
+        user nginx; -> user root;로 변경
+        ```
+        
+        ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a3a7764d-95df-42be-8007-f2c6eb76f900/0f075a6b-3712-4b47-a574-077f62656522/Untitled.png)
+        
+        - 기본적으로 nginx.conf 파일 하나만 가지고 사용해도 되지만 현재 conf.d 폴더에 사이트 별로 config 파일 분리해서 사용 중 ( 경로 /etc/nginx/conf.d )   *보통은 site-available 폴더 이용함 / 뭐써도 상관없음
+        
+        ```bash
+        # conf file 설정
+        server {
+            listen       8183;   #포트 설정
+            server_name  dev-ainews.newssum.co.kr;  # 도메인 설정
+        
+            access_log  /var/log/nginx/newda/newda.access.log  main;  # nginx 접근 로그
+            error_log  /var/log/nginx/newda/newda.error.log notice;   # nginx 에러 로그
+        
+            location / {
+                #root   /usr/share/nginx/html;     
+                root    /home/centos/my_news;     # 웹 파일 경로
+                index  index.html index.htm;      
+                try_files $uri $uri/ /index.html; # /로 접근시 자동으로 index.html로 접속
+            }
+        
+            #error_page  404              /404.html;
+        
+            # redirect server error pages to the static page /50x.html
+            
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                root   /usr/share/nginx/html;
+            }
+        
+            # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+            #
+            #location ~ \.php$ {
+            #    proxy_pass   http://127.0.0.1;
+            #}
+        
+            # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+            #
+            #location ~ \.php$ {
+            #    root           html;
+            #    fastcgi_pass   127.0.0.1:9000;
+            #    fastcgi_index  index.php;
+            #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+            #    include        fastcgi_params;
+            #}
+        
+            # deny access to .htaccess files, if Apache's document root
+            # concurs with nginx's one
+            #
+            #location ~ /\.ht {
+            #    deny  all;
+            #}
+        }
+        
+        ```
+        
+        ```bash
+        # conf file 설정 ( 443 설정 )
+        server {
+        	    	server_name  dev-ainews.newssum.co.kr;  # 도메인 설정
+                listen       443 ssl;                   # 포트 설정
+                listen       [::]:443 ssl;              # 포트 설정
+        
+                #ssl on;
+                ssl_certificate "/etc/pki/nginx/star_newssum_co_kr_NginX_cert.pem";      #SSL 키 위치
+                ssl_certificate_key "/etc/pki/nginx/star_newssum_co_kr_NginX_nopass_key.pem";  #SSL 키 위치
+        
+                ssl_session_cache shared:SSL:1m;
+                ssl_session_timeout  10m;
+                ssl_ciphers HIGH:!aNULL:!MD5;
+                ssl_prefer_server_ciphers on;
+        
+                access_log  /var/log/nginx/sol_newda/sol_newda.access.log  main;     # nginx 접근 로그
+                error_log  /var/log/nginx/sol_newda/sol_newda.error.log notice;      # nginx 에러 로그
+        
+               location / {
+                        root    /home/centos/shinhan_sol;    # 웹 파일 경로
+                        index  index.html index.htm;
+                        try_files $uri $uri/ /index.html;    # /로 접근시 자동으로 index.html로 접속
+                }
+        }
+        
+        ```
+        
+        - nginx config 파일 정상 여부 확인
+        
+        ```bash
+        sudo nginx -t
+        
+        # 정상일 경우 nginx 재시작시 config 파일 적용
+        ```
+        
+    4. 주의 : nginx 의 경우 접근 경로의 **상위 폴더의 권한이 755여야 접근 가능함**
+    (로그 운영 서버 생성시 문제되었던 부분) / (파일은 644->라고 하는데 확인은 안해봄)
+        
+        ```bash
+        # 폴더/파일 권한 변경
+        chmod 755 {{폴더 or 파일}}
+        ```
+        
+    5. nginx 재시작시 자동 실행 설정
+        
+        ```bash
+        # 시스템 컨트롤에서 nginx 자동시작 설정 -> 실행시 아래 그림 1의 disabled가 2의 enabled 변경됨*
+        systemctl enable nginx.service
+        
+        # 시스템 컨트롤에서 nginx 자동시작 해제*
+        systemctl disable nginx.service
+        ```
+        
+        ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a3a7764d-95df-42be-8007-f2c6eb76f900/1b8fe0e1-8f0a-457b-ac15-17c3f00cd77c/Untitled.png)
+        
+        ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a3a7764d-95df-42be-8007-f2c6eb76f900/84d844fc-69e6-40dd-926f-da5d0b2ca4a5/Untitled.png)
+        
+    6. nginx max connection 설정 변경
+        
+        ```bash
+        # nginx config 파일 수정
+        sudo vi /etc/nginx/nginx.conf
+        
+        events {
+        	worker_connections 10240;  #1024에서 10240으로 변경 (**20240805 변경사항)
+        }
+        ```
